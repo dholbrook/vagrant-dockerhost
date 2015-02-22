@@ -1,0 +1,9 @@
+# OS-specific
+.DS_Store
+
+# Vagrant
+boxes/*
+/.vagrant
+
+# docker keys
+/tls
