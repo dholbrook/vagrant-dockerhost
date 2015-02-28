@@ -8,6 +8,7 @@ SUBNET = ENV['VAGRANT_PRIVATE_SUBNET'] || "192.168.200"
 DOMAIN = ENV['VAGRANT_PRIVATE_DOMAIN'] || "example.org"
 ADDRESS = ENV['VAGRANT_DOCKERHOST_ADDRESS'] || SUBNET + ".1"
 MEMORY = ENV['VAGRANT_DOCKERHOST_MEMORY'] || 1024
+CPUS =  ENV['VAGRANT_DOCKERHOST_CPUS'] || 2
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     
@@ -23,7 +24,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       dockerhost.vm.network :private_network, ip: ADDRESS
       dockerhost.vm.provider :virtualbox do |vb|
         vb.name = NAME
-        vb.customize ["modifyvm", :id, "--memory", MEMORY]
+        #vb.customize ["modifyvm", :id, "--memory", MEMORY]
+        vb.memory = MEMORY
+        vb.cpus = CPUS        
       end      
       
       # add port forwards for any containers that need to be exposed
