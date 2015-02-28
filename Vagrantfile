@@ -2,17 +2,30 @@
 # vi: set ft=ruby :
 
 VAGRANTFILE_API_VERSION = "2"
-VAGRANT_DOCKERHOST_NAME = ENV.fetch('VAGRANT_DOCKERHOST_NAME') { 'dockerhost' }
+
+NAME = ENV['VAGRANT_DOCKERHOST_NAME'] || 'dockerhost'
+SUBNET = ENV['VAGRANT_PRIVATE_SUBNET'] || "192.168.200"
+DOMAIN = ENV['VAGRANT_PRIVATE_DOMAIN'] || "example.org"
+ADDRESS = ENV['VAGRANT_DOCKERHOST_ADDRESS'] || SUBNET + ".1"
+MEMORY = ENV['VAGRANT_DOCKERHOST_MEMORY'] || 1024
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     
-  # Use a boot2docker clone that allows vagrant file syncing options
-  config.vm.box = "dduportal/boot2docker"
+  config.vm.define NAME do |dockerhost|
+      
+      # Use a boot2docker clone that allows vagrant file syncing options
+      dockerhost.vm.box = "dduportal/boot2docker"
   
-  #sync ./ to /vagrant used by ./bootlocal.sh for exporting certificates
-  config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
-    
-  config.vm.define VAGRANT_DOCKERHOST_NAME do |dh|
+      #sync ./ to /vagrant used by ./bootlocal.sh for exporting certificates
+      dockerhost.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+   
+      #networking
+      dockerhost.vm.network :private_network, ip: ADDRESS
+      dockerhost.vm.provider :virtualbox do |vb|
+        vb.name = NAME
+        vb.customize ["modifyvm", :id, "--memory", MEMORY]
+      end      
+      
       # add port forwards for any containers that need to be exposed
       #   note: 2375, 2376, and 2222 already defined by dduportal/boot2docker
   
