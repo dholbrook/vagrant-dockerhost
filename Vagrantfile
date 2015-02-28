@@ -24,7 +24,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       dockerhost.vm.network :private_network, ip: ADDRESS
       dockerhost.vm.provider :virtualbox do |vb|
         vb.name = NAME
-        #vb.customize ["modifyvm", :id, "--memory", MEMORY]
         vb.memory = MEMORY
         vb.cpus = CPUS        
       end      
